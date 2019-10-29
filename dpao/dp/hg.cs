@@ -4,7 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using MySql.Data.MySqlClient;
+
 
 namespace dpao.dp
 {
@@ -280,16 +283,18 @@ namespace dpao.dp
         /// <param name="ui"></param>
         /// <returns></returns>
         public static UserInfo Ball(UserInfo ui)
-        { 
+        {
+
+            Ball_ZZZ(ui);
+            return ui;
 
             string DefaultEn = "utf-8";
-        http://199.26.100.237/app/member/FT_browse/body_var.php?uid=pbvbr993km22379403l328742&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=%27N%27
             string cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=re&langx=zh-cn&mtype=3&page_no=0&league_id=&hot_game=";
             string  cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?rtype=re&uid=" + ui.Uid + "&langx=zh-cn&mtype=3&showtype=&league_id=&hot_game=";
 
-            cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=N";//今日
-            //cUrl = "http://" + ui.cUrl + "/app/member/FT_future/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=1&page_no=0&league_id=&hot_game=&g_date=ALL&isie11=N";//早餐
-            //cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=N";
+            //cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=N";//今日
+            cUrl = "http://" + ui.cUrl + "/app/member/FT_future/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=1&page_no=0&league_id=&hot_game=&g_date=ALL&isie11=N";//早餐
+            
             cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?uid=" + ui.Uid + "&langx=zh-cn&mtype=3&league_id=";
            string cDoc = Connect.getDocument(cUrl, ui.cc, cReferer, DefaultEn, false, true);
          // double db= cDoc.Length / 8 / 1024;
@@ -402,6 +407,8 @@ namespace dpao.dp
             string s = null;
             ArrayList al = new ArrayList();
             Hashtable ht = new Hashtable();
+            Hashtable hLianSai = new Hashtable();
+            Hashtable hOdds = new Hashtable();
             System.Diagnostics.Stopwatch sh = new System.Diagnostics.Stopwatch();
             sh.Start();
             foreach (string a in jsarr)
@@ -410,27 +417,49 @@ namespace dpao.dp
                 {
                     string line = a.Replace(" ", "");
                     //line = "g(['3894824','0.5','0.890','1.010','O3','U3','0.870','1.010','1.89','3.85','3.85','单','双','1.94','1.93','3894825','H','0 / 0.5','1.030','0.850','O1 / 1.5','U1 / 1.5','0.800','1.080','2.46','3.95','2.27','74','8DBCB9BCBDBCBABCB7CCB6CCBDBCB38AC8CBCAC7C8CDCBA9B3','','unas','N','2785475','Y','N','0','0','','N']);";
-                    line = line.Replace("g(", "").Replace(")", "").Replace("[", "{").Replace("]", "}");
-                    Console.WriteLine(line);
+                  
+                    line = line.Replace("g(", "").Replace(")", "").Replace("[", "").Replace("]", "").Replace("\n","");
                     line = line.Replace("'", "");
-                    string[] arr = line.Split(',');
-                    s += arr[2] + "," + arr[5] + "," + arr[6] + ",,,\n";
-                    if (arr[1].IndexOf("半场") > 0) continue;
-                    if (Conf.LianSai.ContainsKey(arr[2])) continue;//过滤联赛
-                    if (Conf.teamKey.ContainsKey(arr[5])) continue;//过滤球队
-
-                    string Ls = arr[0].Trim();
-                    string cQid1 = arr[3].Trim();
-                    string cQid2 = arr[4].Trim();
-                    string[] aras = hg.ParseLineds(arr);
-                    Console.WriteLine(aras.ToString());
+                    string[]  sArray = line.Split(',');
+                    string key = sArray[0]; //联赛ID
+                    string  cArr = string.Join(",", sArray);
+                    hOdds.Add(key, cArr);
+                   
+                }
+                Console.WriteLine(a);
+                if (a.IndexOf("gm[")>-1)
+                {
+                    string line = a.Replace(" ", "");
+                    //line = "_.gm['3909468']=['10-29<br>04:30a<br><font color=red>Running Ball</font>','印尼甲组联赛','21664','21663','帕尔斯巴亚','斯莱曼','H'];";
+                    line = line.Replace("_.gm['", "").Replace("'", "").Replace("\n", "");
+                    string[] sArray = Regex.Split(line, "]=", RegexOptions.IgnoreCase);
+                    string key = sArray[0]; //联赛ID
+                    string v = sArray[1].Replace("'", "").Replace("[", "").Replace("]", "").Replace(";", "");
+                    string[] sArr = Regex.Split(v, "<br>", RegexOptions.IgnoreCase);
+                    string stime = sArr[0] + " " + sArr[1].Replace("a", "").Replace("p", "");
+                    string[] str = v.Split(',');
+                    str[0] = stime;
+                    string cArr = string.Join(",", str);
+                    hLianSai.Add(key,cArr);
                 }
 
             }
+            HeBing(hOdds, hLianSai);
 
             ui.Ht = ht;
             ui.ODDS = s;
             return ui;
+        }
+
+        public static void HeBing(Hashtable hOdds, Hashtable hLianSai)
+        {
+
+            foreach (DictionaryEntry de in hOdds)
+            {
+                Console.WriteLine(string.Format("{0}-{1}", de.Key, de.Value));
+                 Console.WriteLine(hLianSai[de.Key].ToString());
+            }
+
         }
         public static int bet(UserInfo ui,string[] arr,int Type) {
 

@@ -29,6 +29,10 @@ namespace dpao.dp
         public static string Uid =null;
         public static string cUrl = null;
 
+        public static Hashtable hLianSai = new Hashtable();
+        public static Hashtable hOdds = new Hashtable();
+
+
 
 
         public static int GetLianSaiID(string cName)

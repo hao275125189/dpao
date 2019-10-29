@@ -80,3 +80,5 @@ E:\dpao\dpao\dpao\obj\Debug\dpao.Form1.resources
 E:\dpao\dpao\dpao\obj\Debug\dpao.Properties.Resources.resources
 E:\dpao\dpao\dpao\obj\Debug\dpao.v.Login.resources
 E:\dpao\dpao\dpao\obj\Debug\dpao.csproj.GenerateResource.Cache
+E:\dpao\dpao\dpao\bin\Debug\MySql.Data.dll
+E:\dpao\dpao\dpao\bin\Debug\MySql.Fabric.Plugin.dll

@@ -12,6 +12,7 @@ using dpao.dp;
 using System.Threading;
 using System.Collections;
 using dpao.v;
+using System.Text.RegularExpressions;
 
 namespace dpao
 {
@@ -64,7 +65,7 @@ namespace dpao
             checkBox3.Checked = Conf.d25;
 
 
-            button9.Visible = false;
+            //button9.Visible = false;
             //button7.Visible = false;
         }
        
@@ -621,7 +622,38 @@ namespace dpao
 
         private void button9_Click(object sender, EventArgs e)
         {
-           //Console.WriteLine(Pfun.GetCpuID());
+
+
+            string line = "_.gm['3909468']=['10-29<br>04:30a<br><font color=red>Running Ball</font>','印尼甲组联赛','21664','21663','帕尔斯巴亚','斯莱曼','H'];";
+            line = line.Replace("_.gm['", "").Replace("'","");       
+            string[] sArray = Regex.Split(line, "]=", RegexOptions.IgnoreCase);
+            string key = sArray[0]; //联赛ID
+
+            string v = sArray[1].Replace("'","").Replace("[","").Replace("]","").Replace(";","");   
+
+            string[] sArr = Regex.Split(v, "<br>", RegexOptions.IgnoreCase);
+
+            string stime = sArr[0] +" "+ sArr[1].Replace("a","").Replace("p","");
+
+            string[] str = v.Split(',');
+            str[0] = stime;
+
+            string cArr = string.Join(",", str);
+            line = "g(['3894824','0.5','0.890','1.010','O3','U3','0.870','1.010','1.89','3.85','3.85','单','双','1.94','1.93','3894825','H','0 / 0.5','1.030','0.850','O1 / 1.5','U1 / 1.5','0.800','1.080','2.46','3.95','2.27','74','8DBCB9BCBDBCBABCB7CCB6CCBDBCB38AC8CBCAC7C8CDCBA9B3','','unas','N','2785475','Y','N','0','0','','N']);";
+            line = line.Replace("g(", "").Replace(")", "").Replace("[", "").Replace("]", "");       
+            line = line.Replace("'", "");
+            sArray = line.Split(',');
+            key = sArray[0]; //联赛ID
+            cArr = string.Join(",", sArray);
+            //string s = arr[2] + "," + arr[5] + "," + arr[6] + ",,,\n";
+
+
+
+            return;
+
+
+
+            //Console.WriteLine(Pfun.GetCpuID());
             textBox6.Text = Pfun.GetMainHardDiskId().ToString();
             return;
             string cUrl = "http://bf.win007.com/football/hg/Over_20150328.htm";
