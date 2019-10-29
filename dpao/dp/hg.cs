@@ -275,7 +275,7 @@ namespace dpao.dp
 
         }
         /// <summary>
-        /// 滚球接水
+        ///  早餐接水
         /// </summary>
         /// <param name="ui"></param>
         /// <returns></returns>
@@ -287,7 +287,8 @@ namespace dpao.dp
             string cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=re&langx=zh-cn&mtype=3&page_no=0&league_id=&hot_game=";
             string  cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?rtype=re&uid=" + ui.Uid + "&langx=zh-cn&mtype=3&showtype=&league_id=&hot_game=";
 
-            cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=N";
+            cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=N";//今日
+            //cUrl = "http://" + ui.cUrl + "/app/member/FT_future/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=1&page_no=0&league_id=&hot_game=&g_date=ALL&isie11=N";//早餐
             //cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=N";
             cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?uid=" + ui.Uid + "&langx=zh-cn&mtype=3&league_id=";
            string cDoc = Connect.getDocument(cUrl, ui.cc, cReferer, DefaultEn, false, true);
@@ -327,7 +328,7 @@ namespace dpao.dp
                 if (a.StartsWith("\ng(["))
                 {
                    string line = a.Replace(" ", "");
-                    //line = "g(['1894292','<font style=background-color=red>半场</font>','丹麦后备联赛附加赛','10142','10141','维积利 (后备) ','域堡 (后备) ','H','0.5','0.700','1.120','O2.5 / 3','U2.5 / 3','0.920','0.880','','','','0','1','1894293','','','','','','','','','0','1','','C','2.95','2.13','3.20','','','','','','','','','','','Y','03-23<br>09:59a','MTIME^<font style=background-color=red>半场</font>','3']);";
+                    //line = "g(['3894824','0.5','0.890','1.010','O3','U3','0.870','1.010','1.89','3.85','3.85','单','双','1.94','1.93','3894825','H','0 / 0.5','1.030','0.850','O1 / 1.5','U1 / 1.5','0.800','1.080','2.46','3.95','2.27','74','8DBCB9BCBDBCBABCB7CCB6CCBDBCB38AC8CBCAC7C8CDCBA9B3','','unas','N','2785475','Y','N','0','0','','N']);";
                     line = line.Replace("g(", "").Replace(")","").Replace("[","{").Replace("]","}") ;
                     Console.WriteLine(line);
                     line = line.Replace("'", "");
@@ -339,20 +340,92 @@ namespace dpao.dp
                    
                    string Ls=arr[0].Trim();
                    string cQid1 = arr[3].Trim();
-                   string cQid2 = arr[4].Trim();                 
+                   string cQid2 = arr[4].Trim();
+                    string[] aras= hg.ParseLineds(arr);
+                    Console.WriteLine(aras.ToString());  
                 }
-                Console.WriteLine(a);
-                if (a.IndexOf("_.gm[") >-1)
+                 
+            }
+
+            ui.Ht = ht;
+            ui.ODDS = s;
+            return ui;
+        }
+
+        /// <summary>
+        ///  今日接水
+        /// </summary>
+        /// <param name="ui"></param>
+        /// <returns></returns>
+
+        public static UserInfo Ball_ZZZ(UserInfo ui)
+        {
+
+            string DefaultEn = "utf-8";
+        http://199.26.100.237/app/member/FT_browse/body_var.php?uid=pbvbr993km22379403l328742&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=%27N%27
+            string cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=re&langx=zh-cn&mtype=3&page_no=0&league_id=&hot_game=";
+            string cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?rtype=re&uid=" + ui.Uid + "&langx=zh-cn&mtype=3&showtype=&league_id=&hot_game=";
+
+            cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=N";//今日
+            //cUrl = "http://" + ui.cUrl + "/app/member/FT_future/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=1&page_no=0&league_id=&hot_game=&g_date=ALL&isie11=N";//早餐
+            //cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=N";
+            cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?uid=" + ui.Uid + "&langx=zh-cn&mtype=3&league_id=";
+            string cDoc = Connect.getDocument(cUrl, ui.cc, cReferer, DefaultEn, false, true);
+            // double db= cDoc.Length / 8 / 1024;
+            // Console.WriteLine(db.ToString());
+            if (cDoc == null)
+            {
+                ui.Status = 2;
+                ui.Msg = "采不到数据";
+                return ui;
+            }
+            else
+            {
+                ui.Msg = "正常";
+                ui.Status = 1;
+            }
+            string[] jsarr = cDoc.Split(';');
+            if (jsarr.Length == 1)
+            {
+                if (jsarr[0].IndexOf("logout") > 0)
+                {
+                    ui.Status = 0;
+                    ui.Msg = "退出，请登录";
+                    return ui;
+                }
+            }
+            else
+            {
+                ui.Msg = "正常";
+                ui.Status = 1;
+            }
+            string s = null;
+            ArrayList al = new ArrayList();
+            Hashtable ht = new Hashtable();
+            System.Diagnostics.Stopwatch sh = new System.Diagnostics.Stopwatch();
+            sh.Start();
+            foreach (string a in jsarr)
+            {
+                if (a.StartsWith("\ng(["))
                 {
                     string line = a.Replace(" ", "");
-                    //line = "g(['1894292','<font style=background-color=red>半场</font>','丹麦后备联赛附加赛','10142','10141','维积利 (后备) ','域堡 (后备) ','H','0.5','0.700','1.120','O2.5 / 3','U2.5 / 3','0.920','0.880','','','','0','1','1894293','','','','','','','','','0','1','','C','2.95','2.13','3.20','','','','','','','','','','','Y','03-23<br>09:59a','MTIME^<font style=background-color=red>半场</font>','3']);";
-                    line = line.Replace("g(['", "");
+                    //line = "g(['3894824','0.5','0.890','1.010','O3','U3','0.870','1.010','1.89','3.85','3.85','单','双','1.94','1.93','3894825','H','0 / 0.5','1.030','0.850','O1 / 1.5','U1 / 1.5','0.800','1.080','2.46','3.95','2.27','74','8DBCB9BCBDBCBABCB7CCB6CCBDBCB38AC8CBCAC7C8CDCBA9B3','','unas','N','2785475','Y','N','0','0','','N']);";
+                    line = line.Replace("g(", "").Replace(")", "").Replace("[", "{").Replace("]", "}");
+                    Console.WriteLine(line);
                     line = line.Replace("'", "");
                     string[] arr = line.Split(',');
-                    line = line.Replace("_.gm", "").Replace(")", "");
-                    Console.WriteLine(line);
+                    s += arr[2] + "," + arr[5] + "," + arr[6] + ",,,\n";
+                    if (arr[1].IndexOf("半场") > 0) continue;
+                    if (Conf.LianSai.ContainsKey(arr[2])) continue;//过滤联赛
+                    if (Conf.teamKey.ContainsKey(arr[5])) continue;//过滤球队
 
+                    string Ls = arr[0].Trim();
+                    string cQid1 = arr[3].Trim();
+                    string cQid2 = arr[4].Trim();
+                    string[] aras = hg.ParseLineds(arr);
+                    Console.WriteLine(aras.ToString());
                 }
+
             }
 
             ui.Ht = ht;
