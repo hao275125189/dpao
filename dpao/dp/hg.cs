@@ -469,9 +469,9 @@ namespace dpao.dp
                 ht["Q2"] = LianSai[5];
                 ht["HC"] = LianSai[6];
                 ht["pan"] = odds[1];
-                ht["Q1adds"] = odds[1];
-                ht["Q2adds"] = odds[1];
-                ht["addtime"] = odds[1];
+                ht["Q1adds"] = odds[2];
+                ht["Q2adds"] = odds[3];
+                ht["addtime"] = epoch;
                 DbHelperMySQL.ExecuteSqlTran(ht);
                 
             }
