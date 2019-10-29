@@ -622,7 +622,7 @@ namespace dpao
 
         private void button9_Click(object sender, EventArgs e)
         {
-
+            DbHelperMySQL.ExecuteSql("INSERT INTO `dball`.`db_liansai` ( `lid`, `name`) VALUES ( '123', '222');");
 
             string line = "_.gm['3909468']=['10-29<br>04:30a<br><font color=red>Running Ball</font>','印尼甲组联赛','21664','21663','帕尔斯巴亚','斯莱曼','H'];";
             line = line.Replace("_.gm['", "").Replace("'","");       

@@ -456,9 +456,27 @@ namespace dpao.dp
 
             foreach (DictionaryEntry de in hOdds)
             {
+                Hashtable ht = new Hashtable();
                 Console.WriteLine(string.Format("{0}-{1}", de.Key, de.Value));
-                 Console.WriteLine(hLianSai[de.Key].ToString());
+                Console.WriteLine(hLianSai[de.Key].ToString());
+                string[] odds = de.Value.ToString().Split(',');
+                string[] LianSai = hLianSai[de.Key].ToString().Split(',');
+                long epoch = (DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000;
+                ht["stime"] = LianSai[0];
+                ht["Lid"] = de.Key;
+                ht["Ls"] = LianSai[1];
+                ht["Q1"] = LianSai[4];
+                ht["Q2"] = LianSai[5];
+                ht["HC"] = LianSai[6];
+                ht["pan"] = odds[1];
+                ht["Q1adds"] = odds[1];
+                ht["Q2adds"] = odds[1];
+                ht["addtime"] = odds[1];
+                DbHelperMySQL.ExecuteSqlTran(ht);
+                
             }
+
+
 
         }
         public static int bet(UserInfo ui,string[] arr,int Type) {
