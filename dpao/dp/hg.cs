@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using MySql.Data.MySqlClient;
-
+using System.Threading;
 
 namespace dpao.dp
 {
@@ -30,7 +30,7 @@ namespace dpao.dp
             string cUrl = null;
             string cReferer = null;
             string cLoginData = null;
-            cUrl = "http://"+ui.cUrl+"/app/member/";
+            cUrl = "http://" + ui.cUrl + "/app/member/";
             cReferer = "http://" + ui.cUrl + "/";
             cDoc = Connect.getDocument(cUrl, cc, cReferer, DefaultEn, false, true);
 
@@ -39,9 +39,9 @@ namespace dpao.dp
             cLoginData = "blackbox=" + blackbox;
             cDoc = Connect.postDocument(cUrl, cLoginData, cc, DefaultEn);
 
-            cLoginData = "username="+ui.User+"&passwd="+ui.Pwd+ "&langx=zh-cn&auto=CHCAEF&blackbox="+ blackbox + "&nowsite=new";
+            cLoginData = "username=" + ui.User + "&passwd=" + ui.Pwd + "&langx=zh-cn&auto=CHCAEF&blackbox=" + blackbox + "&nowsite=new";
             cUrl = "http://" + ui.cUrl + "/app/member/new_login.php";
-            cReferer = "http://" + ui.cUrl + "/app/member/";           
+            cReferer = "http://" + ui.cUrl + "/app/member/";
             cDoc = Connect.postDocument_hg(cUrl, cLoginData, cc, cReferer, DefaultEn, false, false);
             if (cDoc == null) return ui; ;
             if (cDoc.IndexOf("Plaese wait 3 minutes and try again") > 0)
@@ -49,43 +49,45 @@ namespace dpao.dp
                 return ui;
             }
             string[] uid = cDoc.Split('|');
-           
+
             if (uid.Length > 5)
             {
                 ui.Status = 1;
                 ui.Uid = uid[3];
                 ui.cc = cc;
             }
-            else {
+            else
+            {
                 ui.Status = 0;
-               
+
             }
             return ui;
         }
 
         public static UserInfo Odds(UserInfo ui)
         {
-            
+
             //sh.Start();
             string DefaultEn = "utf-8";
             string cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=&hot_game=";
-            string  cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?rtype=re&uid=" + ui.Uid + "&langx=zh-cn&mtype=3&showtype=&league_id=&hot_game=";
-           string cDoc = Connect.getDocument(cUrl, ui.cc, cReferer, DefaultEn, false, true);
-           //TimeSpan tii = sh.Elapsed;
-           //Console.WriteLine(tii.TotalSeconds + cUrl);
-           //TimeSpan ti = sh.Elapsed;
-           //Console.WriteLine(ti.TotalSeconds + "hgodds");
-           
-           if (cDoc == null) return ui;
+            string cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?rtype=re&uid=" + ui.Uid + "&langx=zh-cn&mtype=3&showtype=&league_id=&hot_game=";
+            string cDoc = Connect.getDocument(cUrl, ui.cc, cReferer, DefaultEn, false, true);
+            //TimeSpan tii = sh.Elapsed;
+            //Console.WriteLine(tii.TotalSeconds + cUrl);
+            //TimeSpan ti = sh.Elapsed;
+            //Console.WriteLine(ti.TotalSeconds + "hgodds");
+
+            if (cDoc == null) return ui;
             string[] jsarr = cDoc.Split(';');
             if (jsarr.Length == 1)
             {
-                if (jsarr[0].IndexOf("logout") > 0) {
+                if (jsarr[0].IndexOf("logout") > 0)
+                {
                     ui.Status = 0;
                     return ui;
                 }
             }
-            string s=null;                
+            string s = null;
             ArrayList al = new ArrayList();
             Hashtable ht = new Hashtable();
             System.Diagnostics.Stopwatch sh = new System.Diagnostics.Stopwatch();
@@ -111,37 +113,37 @@ namespace dpao.dp
 
                     if (lsId == -1 || qd1 == -1 || qd2 == -1) continue;//这个条件是过滤没有比对的联赛跟球队，待定
                     string key = lsId.ToString() + qd1.ToString() + qd2.ToString();
-                   // string pkkey = key + ":" + arr[8].Trim().ToString();
+                    // string pkkey = key + ":" + arr[8].Trim().ToString();
                     string[] htarr = ParseLineds(arr);
 
                     if (ht.ContainsKey(key))
                     {//判断第一层是否有数据，如果有就给第二层加数据
                         Hashtable hts = (Hashtable)ht[key];//取出第一层对象
-                        string id = (hts.Count+1).ToString();
+                        string id = (hts.Count + 1).ToString();
                         hts.Add(id, htarr);//给对象加数据
                         ht[key] = hts; //更新第一层数据
-                       
-                        
+
+
                     }
                     else
                     {
                         Hashtable hts = new Hashtable();//第二层数据
                         string id = (hts.Count + 1).ToString();
                         hts.Add(id, htarr);
-                        ht.Add(key, hts); 
-                    }                
-                     
+                        ht.Add(key, hts);
+                    }
+
                 }
             }
-           TimeSpan tii = sh.Elapsed;
-            Console.WriteLine(tii.TotalSeconds +"ieieieiei");
-           
+            TimeSpan tii = sh.Elapsed;
+            Console.WriteLine(tii.TotalSeconds + "ieieieiei");
+
             ui.ODDS = s;
-            
-            ui.Al = al; 
-            
+
+            ui.Al = al;
+
             return ui;
-        
+
         }
         private static string[] ParseLineds(string[] arr)
         {
@@ -150,7 +152,7 @@ namespace dpao.dp
             //int qd2 = Conf.GetteamKeyID(arr[6].Trim());
             //if (lsId == -1 || qd1 == -1 || qd2 == -1) return null;//这个条件是过滤没有比对的联赛跟球队，待定
             //string key = lsId.ToString() + qd1.ToString() + qd2.ToString();
-            Hashtable ht=new Hashtable();
+            Hashtable ht = new Hashtable();
             //return ht;
             string cFormat = "时间,比分,联赛,主队,客队,全场亚洲盘上盘,全场亚洲盘下盘,上盘赔率,下盘赔率,全场大小盘盘口,大赔率,小赔率,上半场上盘,上半场下盘,上半场上盘赔率,上半场下盘赔率,上半场大小盘盘口,上半场大赔率,上半场小赔率,扩展信息1,扩展信息2,扩展信息3,扩展信息4,扩展信息5,扩展信息6,扩展信息7,扩展信息8";
 
@@ -158,8 +160,8 @@ namespace dpao.dp
             string cQiuDui = arr[5].Trim();//pi_old.QiuDui.Trim();
             string cQiuDui_Fu = arr[6].Trim();// pi_old.QiuDui_Fu.Trim();
             string cBiFen = arr[18].Trim() + "-" + arr[19].Trim();// pi_old.BiFen;
-           
-            
+
+
 
             cBiFen = "0-0";
             string cTime = arr[1].Trim();
@@ -169,7 +171,7 @@ namespace dpao.dp
                 cTime = "45";
             }
             //int iTime = Convert.ToInt32(cTime);
-            string EventNo = arr[0].Replace("\n","");
+            string EventNo = arr[0].Replace("\n", "");
             //string EventNo2 = Convert.ToString(Convert.ToInt32(EventNo.Trim()) + 1);
             string GNum1 = arr[3];
             string GNum2 = arr[4];
@@ -219,7 +221,7 @@ namespace dpao.dp
             arrReturn[11] = arr[13].ToString().Trim();
             arrReturn[22] = "FT_order/FT_order_rou.php?gid=" + EventNo + "&type=H&gnum=" + GNum1 + "&odd_f_type=H";
 
-            
+
 
             #endregion
 
@@ -240,7 +242,7 @@ namespace dpao.dp
 
             arrReturn[14] = arr[25];
             arrReturn[15] = arr[26];
-           // arrReturn[23] = "FT_order/FT_order_hr.php?gid=" + EventNo2 + "&type=H&gnum=" + GNum1 + "&strong=" + strong2 + "&odd_f_type=H";
+            // arrReturn[23] = "FT_order/FT_order_hr.php?gid=" + EventNo2 + "&type=H&gnum=" + GNum1 + "&strong=" + strong2 + "&odd_f_type=H";
 
             //arrReturn[24] = "FT_order/FT_order_hr.php?gid=" + EventNo2 + "&type=C&gnum=" + GNum2 + "&strong=" + strong2 + "&odd_f_type=H";
             //Console.WriteLine(arrReturn[23]);
@@ -286,33 +288,36 @@ namespace dpao.dp
         {
 
             Ball_ZZZ(ui);
-            return ui;
+            //return ui;
 
+            int t_page = 0;
+            int page   = 0;
+
+           Path:  //goto 标签
+
+           
             string DefaultEn = "utf-8";
-            string cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=re&langx=zh-cn&mtype=3&page_no=0&league_id=&hot_game=";
-            string  cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?rtype=re&uid=" + ui.Uid + "&langx=zh-cn&mtype=3&showtype=&league_id=&hot_game=";
-
             //cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=N";//今日
-            cUrl = "http://" + ui.cUrl + "/app/member/FT_future/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=1&page_no=0&league_id=&hot_game=&g_date=ALL&isie11=N";//早餐
-            
-            cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?uid=" + ui.Uid + "&langx=zh-cn&mtype=3&league_id=";
-           string cDoc = Connect.getDocument(cUrl, ui.cc, cReferer, DefaultEn, false, true);
-         // double db= cDoc.Length / 8 / 1024;
-         // Console.WriteLine(db.ToString());
-           if (cDoc == null)
-           {
-               ui.Status = 2;
-               ui.Msg = "采不到数据";
-               return ui;
-           }
-           else {
-               ui.Msg = "正常";
-               ui.Status = 1;
-           }
+            string cUrl = "http://" + ui.cUrl + "/app/member/FT_future/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=1&page_no="+ page.ToString() + "&league_id=&hot_game=&g_date=ALL&isie11=N";//早餐
+            string cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?uid=" + ui.Uid + "&langx=zh-cn&mtype=3&league_id=";
+            string cDoc = Connect.getDocument(cUrl, ui.cc, cReferer, DefaultEn, false, true);
+          
+            if (cDoc == null)
+            {
+                ui.Status = 2;
+                ui.Msg = "采不到数据";
+                return ui;
+            }
+            else
+            {
+                ui.Msg = "正常";
+                ui.Status = 1;
+            }
             string[] jsarr = cDoc.Split(';');
             if (jsarr.Length == 1)
             {
-                if (jsarr[0].IndexOf("logout") > 0) {
+                if (jsarr[0].IndexOf("logout") > 0)
+                {
                     ui.Status = 0;
                     ui.Msg = "退出，请登录";
                     return ui;
@@ -323,33 +328,76 @@ namespace dpao.dp
                 ui.Msg = "正常";
                 ui.Status = 1;
             }
-            string s=null;                
+            string s = null;
             ArrayList al = new ArrayList();
             Hashtable ht = new Hashtable();
             System.Diagnostics.Stopwatch sh = new System.Diagnostics.Stopwatch();
             sh.Start();
             foreach (string a in jsarr)
             {
+
+                //找到分页总数
+                if (a.IndexOf("_.t_page") > -1)
+                {
+                    string[] Pa = a.Split('=');
+                    t_page=Convert.ToInt32(Pa[1]);
+                }
+
                 if (a.StartsWith("\ng(["))
                 {
-                   string line = a.Replace(" ", "");
+                    string line = a.Replace(" ", "");
                     //line = "g(['3894824','0.5','0.890','1.010','O3','U3','0.870','1.010','1.89','3.85','3.85','单','双','1.94','1.93','3894825','H','0 / 0.5','1.030','0.850','O1 / 1.5','U1 / 1.5','0.800','1.080','2.46','3.95','2.27','74','8DBCB9BCBDBCBABCB7CCB6CCBDBCB38AC8CBCAC7C8CDCBA9B3','','unas','N','2785475','Y','N','0','0','','N']);";
-                    line = line.Replace("g(", "").Replace(")","").Replace("[","{").Replace("]","}") ;
-                    Console.WriteLine(line);
+                    line = line.Replace("g(", "").Replace(")", "").Replace("[", "{").Replace("]", "}");
+                    //Console.WriteLine(line);
                     line = line.Replace("'", "");
-                   string[] arr = line.Split(',');
-                   s += arr[2] + "," + arr[5] + "," + arr[6] + ",,,\n";
-                   if (arr[1].IndexOf("半场") > 0) continue;
-                   if (Conf.LianSai.ContainsKey(arr[2]))continue;//过滤联赛
-                   if (Conf.teamKey.ContainsKey(arr[5])) continue;//过滤球队
+                    string[] arr = line.Split(',');
+                    s += arr[2] + "," + arr[5] + "," + arr[6] + ",,,\n";
+                    if (arr[1].IndexOf("半场") > 0) continue;
+                    if (Conf.LianSai.ContainsKey(arr[2])) continue;//过滤联赛
+                    if (Conf.teamKey.ContainsKey(arr[5])) continue;//过滤球队
+
+                    string[] sArr = Regex.Split(arr[1], "<br>", RegexOptions.IgnoreCase);
+                    string stime = sArr[0] + " " + sArr[1].Replace("a", "").Replace("p", "");
+
+
+
+                    long epoch = (DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000;
+                    ht["stime"] = stime;
+                    ht["Lid"] = arr[0].Replace("\n{", "");
+                    ht["Ls"] = arr[2];
+                    ht["Q1"] = arr[5];
+                    ht["Q2"] = arr[6];
+                    ht["HC"] = arr[7];
+                    ht["pan"] = arr[8];
+                    ht["Q1adds"] = arr[9];
+                    ht["Q2adds"] = arr[10];
+                    ht["addtime"] = epoch;
+                    ht["ctype"] = 2;
                    
-                   string Ls=arr[0].Trim();
-                   string cQid1 = arr[3].Trim();
-                   string cQid2 = arr[4].Trim();
-                    string[] aras= hg.ParseLineds(arr);
-                    Console.WriteLine(aras.ToString());  
+                    ArrayList alk = new ArrayList();
+                    ArrayList alv = new ArrayList();
+
+                    foreach (DictionaryEntry myDE in ht)
+                    {
+                        alk.Add(myDE.Key);
+                        alv.Add("'" + myDE.Value.ToString() + "'");
+                    }
+                    string str = string.Join(",", (string[])alk.ToArray(typeof(string)));
+                    string strv = string.Join(",", (string[])alv.ToArray(typeof(string)));
+
+                    string sql = "INSERT INTO  db_odds(" + str + ") VALUES (" + strv + ");";
+                    DbHelperMySQL.ExecuteSql(sql);
+
                 }
-                 
+
+            }
+
+            page++;
+            Console.WriteLine(page);
+            if (page <= t_page - 1)
+            {
+                Thread.Sleep(10000);
+                goto Path;
             }
 
             ui.Ht = ht;
@@ -365,19 +413,21 @@ namespace dpao.dp
 
         public static UserInfo Ball_ZZZ(UserInfo ui)
         {
+            int t_page = 0;
+            int page = 0;
 
+            Path:  //goto 标签  解决分页问题
             string DefaultEn = "utf-8";
-        http://199.26.100.237/app/member/FT_browse/body_var.php?uid=pbvbr993km22379403l328742&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=%27N%27
-            string cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=re&langx=zh-cn&mtype=3&page_no=0&league_id=&hot_game=";
-            string cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?rtype=re&uid=" + ui.Uid + "&langx=zh-cn&mtype=3&showtype=&league_id=&hot_game=";
+            //string cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=re&langx=zh-cn&mtype=3&page_no=0&league_id=&hot_game=";
+            //string cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?rtype=re&uid=" + ui.Uid + "&langx=zh-cn&mtype=3&showtype=&league_id=&hot_game=";
 
-            cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=N";//今日
-            //cUrl = "http://" + ui.cUrl + "/app/member/FT_future/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=1&page_no=0&league_id=&hot_game=&g_date=ALL&isie11=N";//早餐
-            //cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=N";
-            cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?uid=" + ui.Uid + "&langx=zh-cn&mtype=3&league_id=";
+            string cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=" + page.ToString() + "&league_id=undefined&hot_game=&isie11=N";//今日
+                   //cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=" + page.ToString() + "&league_id =&hot_game=&isie11=N";
+                   //cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=undefined&hot_game=&isie11=N";//今日
+                   //cUrl = "http://" + ui.cUrl + "/app/member/FT_browse/body_var.php?uid=" + ui.Uid + "&rtype=r&langx=zh-cn&mtype=3&page_no=0&league_id=&hot_game=&isie11=N";
+            string cReferer = "http://" + ui.cUrl + "/app/member/FT_browse/index.php?uid=" + ui.Uid + "&langx=zh-cn&mtype=3&league_id=";
             string cDoc = Connect.getDocument(cUrl, ui.cc, cReferer, DefaultEn, false, true);
-            // double db= cDoc.Length / 8 / 1024;
-            // Console.WriteLine(db.ToString());
+        
             if (cDoc == null)
             {
                 ui.Status = 2;
@@ -413,21 +463,27 @@ namespace dpao.dp
             sh.Start();
             foreach (string a in jsarr)
             {
+                //找到分页总数
+                if (a.IndexOf("_.t_page") > -1)
+                {
+                    string[] Pa = a.Split('=');
+                    t_page = Convert.ToInt32(Pa[1]);
+                }
                 if (a.StartsWith("\ng(["))
                 {
                     string line = a.Replace(" ", "");
                     //line = "g(['3894824','0.5','0.890','1.010','O3','U3','0.870','1.010','1.89','3.85','3.85','单','双','1.94','1.93','3894825','H','0 / 0.5','1.030','0.850','O1 / 1.5','U1 / 1.5','0.800','1.080','2.46','3.95','2.27','74','8DBCB9BCBDBCBABCB7CCB6CCBDBCB38AC8CBCAC7C8CDCBA9B3','','unas','N','2785475','Y','N','0','0','','N']);";
-                  
-                    line = line.Replace("g(", "").Replace(")", "").Replace("[", "").Replace("]", "").Replace("\n","");
+
+                    line = line.Replace("g(", "").Replace(")", "").Replace("[", "").Replace("]", "").Replace("\n", "");
                     line = line.Replace("'", "");
-                    string[]  sArray = line.Split(',');
+                    string[] sArray = line.Split(',');
                     string key = sArray[0]; //联赛ID
-                    string  cArr = string.Join(",", sArray);
+                    string cArr = string.Join(",", sArray);
                     hOdds.Add(key, cArr);
-                   
+
                 }
-                Console.WriteLine(a);
-                if (a.IndexOf("gm[")>-1)
+                //Console.WriteLine(a);
+                if (a.IndexOf("gm[") > -1)
                 {
                     string line = a.Replace(" ", "");
                     //line = "_.gm['3909468']=['10-29<br>04:30a<br><font color=red>Running Ball</font>','印尼甲组联赛','21664','21663','帕尔斯巴亚','斯莱曼','H'];";
@@ -440,12 +496,19 @@ namespace dpao.dp
                     string[] str = v.Split(',');
                     str[0] = stime;
                     string cArr = string.Join(",", str);
-                    hLianSai.Add(key,cArr);
+                    hLianSai.Add(key, cArr);
                 }
 
             }
             HeBing(hOdds, hLianSai);
 
+            page++;
+            Console.WriteLine(page);
+            if (page <= t_page - 1)
+            {
+                Thread.Sleep(10000);
+                goto Path;
+            }
             ui.Ht = ht;
             ui.ODDS = s;
             return ui;
@@ -457,8 +520,8 @@ namespace dpao.dp
             foreach (DictionaryEntry de in hOdds)
             {
                 Hashtable ht = new Hashtable();
-                Console.WriteLine(string.Format("{0}-{1}", de.Key, de.Value));
-                Console.WriteLine(hLianSai[de.Key].ToString());
+                //Console.WriteLine(string.Format("{0}-{1}", de.Key, de.Value));
+                //Console.WriteLine(hLianSai[de.Key].ToString());
                 string[] odds = de.Value.ToString().Split(',');
                 string[] LianSai = hLianSai[de.Key].ToString().Split(',');
                 long epoch = (DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000;
@@ -472,14 +535,28 @@ namespace dpao.dp
                 ht["Q1adds"] = odds[2];
                 ht["Q2adds"] = odds[3];
                 ht["addtime"] = epoch;
-                DbHelperMySQL.ExecuteSqlTran(ht);
-                
+                ht["ctype"] = 1;
+
+                ArrayList alk = new ArrayList();
+                ArrayList alv = new ArrayList();
+                foreach (DictionaryEntry myDE in ht)
+                {
+                    alk.Add(myDE.Key);
+                    alv.Add("'" + myDE.Value.ToString() + "'");
+                }
+                string str = string.Join(",", (string[])alk.ToArray(typeof(string)));
+                string strv = string.Join(",", (string[])alv.ToArray(typeof(string)));
+
+                string sql = "INSERT INTO  db_odds(" + str + ") VALUES (" + strv + ");";
+                DbHelperMySQL.ExecuteSql(sql);
+
             }
 
 
 
         }
-        public static int bet(UserInfo ui,string[] arr,int Type) {
+        public static int bet(UserInfo ui, string[] arr, int Type)
+        {
 
             string cul = null;
             if (Type == 1)
@@ -492,24 +569,25 @@ namespace dpao.dp
             }
 
             string cUrl = "http://" + ui.cUrl + "/app/member/" + cul + "&uid=" + ui.Uid + "&langx=zh-cn";
-            string cR="http://"+ui.cUrl+"/app/member/select.php?uid="+ui.Uid+"&langx=zh-cn";
-            string s = Connect.getDocument(cUrl,ui.cc,cR);
+            string cR = "http://" + ui.cUrl + "/app/member/select.php?uid=" + ui.Uid + "&langx=zh-cn";
+            string s = Connect.getDocument(cUrl, ui.cc, cR);
             Hashtable data = Pfun.fromSetting(s);
-           string Url = "http://" + ui.cUrl + "/" + data["url"].ToString() ;
-           string data1 = data["data"].ToString().Replace("btnCancel=取消&Submit=确定交易&wgCancel=取消&wgSubmit=确定交易&", "");
+            string Url = "http://" + ui.cUrl + "/" + data["url"].ToString();
+            string data1 = data["data"].ToString().Replace("btnCancel=取消&Submit=确定交易&wgCancel=取消&wgSubmit=确定交易&", "");
             data1 = data1.Substring(0, data1.Length - 1);
-            data1 = data1.Replace("gold=", "gold="+ Conf.money);
-            s = Connect.postDocument(Url, data1, ui.cc, cUrl);            
-            if (s.IndexOf("成功提交注单")>0) {
+            data1 = data1.Replace("gold=", "gold=" + Conf.money);
+            s = Connect.postDocument(Url, data1, ui.cc, cUrl);
+            if (s.IndexOf("成功提交注单") > 0)
+            {
                 Console.WriteLine("成功提交注单");
                 return 1;
             }
             return 0;
         }
 
-        public static string history(UserInfo ui) 
-        {    
-       
+        public static string history(UserInfo ui)
+        {
+
             string cUrl = "http://" + ui.cUrl + "/app/member/history/history_data.php?uid=" + ui.Uid + "&langx=zh-cn";
             string s = Connect.getDocument(cUrl, ui.cc);
             Console.WriteLine(s);

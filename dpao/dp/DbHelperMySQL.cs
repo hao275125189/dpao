@@ -117,7 +117,8 @@ namespace dpao.dp
                     catch (MySql.Data.MySqlClient.MySqlException e)
                     {
                         connection.Close();
-                        throw e;
+                        return 0;
+                        //throw e;
                     }
                 }
             }
@@ -386,6 +387,7 @@ namespace dpao.dp
                 return ds;
             }
         }
+
         public static DataSet Query(string SQLString, int Times)
         {
             using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -406,7 +408,24 @@ namespace dpao.dp
             }
         }
 
-
+        public static DataTable DQuery(string SQLString)
+        {
+            using (MySqlConnection connection = new MySqlConnection(connectionString))
+            {
+                DataTable ds = new DataTable();
+                try
+                {
+                    connection.Open();
+                    MySqlDataAdapter command = new MySqlDataAdapter(SQLString, connection);
+                    command.Fill(ds);
+                }
+                catch (MySql.Data.MySqlClient.MySqlException ex)
+                {
+                    throw new Exception(ex.Message);
+                }
+                return ds;
+            }
+        }
 
         #endregion
 
@@ -467,7 +486,7 @@ namespace dpao.dp
                     catch
                     {
                         trans.Rollback();
-                        throw;
+                        //throw;
                     }
                 }
             }
