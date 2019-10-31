@@ -35,9 +35,11 @@ namespace dpao.v
             //string use = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.87 Mobile Safari/537.36";
             string strss = "Mozilla/5.0 (Windows; U; Windows NT 5.2) AppleWebKit/525.13 (KHTML, like Gecko) Chrome/0.2.149.27 Safari/525.13;";
             ChangeUserAgent(strss);
-            webBrowser1.Navigate("http://199.26.96.55/");
+            webBrowser1.Navigate("http://66.133.87.40/");
 
         }
+
+        int i = 0;
 
         private void webBrowser1_DocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
         {
@@ -61,6 +63,7 @@ namespace dpao.v
 
             }
             Console.WriteLine(webBrowser1.Document.Window.Frames[0].Document.Url.ToString());
+  
             string Url = webBrowser1.Document.Window.Frames[0].Document.Url.ToString();
             string Urls = webBrowser1.Url.ToString();
             //Url = "http://199.26.96.55/app/member/FT_index.php?uid=t50uihbgrm22379403l328907&langx=zh-cn&mtype=3&news_mem=Y";
@@ -71,6 +74,9 @@ namespace dpao.v
                 Conf.Uid = p[0];
                 Conf.cUrl = Urls.Replace("http://", "").Replace("/",""); ;
                 Console.WriteLine(Conf.Uid);
+
+                if (i>=10) { this.Close(); }   
+                i++;
             }
 
             string conn = System.Windows.Forms.Application.StartupPath + "\\cok.txt";
@@ -78,13 +84,14 @@ namespace dpao.v
             StreamWriter sw5 = myFile.CreateText();
             //初始化完成后，可以用StreamWriter对象一次写入一行，一个字符，一个字符数组，甚至一个字符数组的一部分。
             // 写一个字符            
-            sw5.Write(cookieString);
+            sw5.Write(i.ToString());
             sw5.Close();
         }
 
         private void Login_Load(object sender, EventArgs e)
         {
             web1();
+            webBrowser1.ScriptErrorsSuppressed = true;
         }
 
         private void button1_Click(object sender, EventArgs e)

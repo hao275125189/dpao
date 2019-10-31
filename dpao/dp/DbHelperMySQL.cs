@@ -15,7 +15,8 @@ namespace dpao.dp
     public abstract class DbHelperMySQL
     {
         //数据库连接字符串(web.config来配置)，可以动态更改connectionString支持多数据库.    
-        public static string connectionString = "server=localhost;port=3306;user id=root;password=root;database=DBall";
+        public static string connectionString = "server=localhost;port=3306;user id=root;password=aa6666;database=DBall";
+        //public static string connectionString = "server=localhost;port=3306;user id=dball;password=123456;database=DBall";
         public DbHelperMySQL()
         {
         }
@@ -421,7 +422,7 @@ namespace dpao.dp
                 }
                 catch (MySql.Data.MySqlClient.MySqlException ex)
                 {
-                    throw new Exception(ex.Message);
+                    //throw new Exception(ex.Message);
                 }
                 return ds;
             }

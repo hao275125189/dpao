@@ -13,6 +13,7 @@ using System.Threading;
 using System.Collections;
 using dpao.v;
 using System.Text.RegularExpressions;
+using System.ComponentModel.DataAnnotations;
 
 namespace dpao
 {
@@ -622,93 +623,28 @@ namespace dpao
 
         private void button9_Click(object sender, EventArgs e)
         {
-            DbHelperMySQL.ExecuteSql("INSERT INTO `dball`.`db_liansai` ( `lid`, `name`) VALUES ( '123', '222');");
+          string yoi=DateTime.Now.ToString("yyyy");
+            DataTable Dt= Check.Select1();
+            long epoch = (DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000 - 1*24*3600;
+            string date = "2019-10-30 16:02:33";
+            string time = Convert.ToDateTime(date).ToString("yyyy-MM-dd hh:mm");//12小时 
+            Console.WriteLine(yoi);
 
-            string line = "_.gm['3909468']=['10-29<br>04:30a<br><font color=red>Running Ball</font>','印尼甲组联赛','21664','21663','帕尔斯巴亚','斯莱曼','H'];";
-            line = line.Replace("_.gm['", "").Replace("'","");       
-            string[] sArray = Regex.Split(line, "]=", RegexOptions.IgnoreCase);
-            string key = sArray[0]; //联赛ID
 
-            string v = sArray[1].Replace("'","").Replace("[","").Replace("]","").Replace(";","");   
+            DateTime t1 = DateTime.Parse("2007-01-01 12:10:00");
+            DateTime t2 = DateTime.Parse("2007-01-01 12:00:00");
 
-            string[] sArr = Regex.Split(v, "<br>", RegexOptions.IgnoreCase);
+            System.TimeSpan t3 = t1 - t2;  //两个时间相减 。默认得到的是 两个时间之间的天数   得到：365.00:00:00 
+            var rs = t3.TotalMinutes;
+            Console.WriteLine(rs);
+            string op = DateTime.Now.ToString("r");
 
-            string stime = sArr[0] +" "+ sArr[1].Replace("a","").Replace("p","");
 
-            string[] str = v.Split(',');
-            str[0] = stime;
-
-            string cArr = string.Join(",", str);
-            line = "g(['3894824','0.5','0.890','1.010','O3','U3','0.870','1.010','1.89','3.85','3.85','单','双','1.94','1.93','3894825','H','0 / 0.5','1.030','0.850','O1 / 1.5','U1 / 1.5','0.800','1.080','2.46','3.95','2.27','74','8DBCB9BCBDBCBABCB7CCB6CCBDBCB38AC8CBCAC7C8CDCBA9B3','','unas','N','2785475','Y','N','0','0','','N']);";
-            line = line.Replace("g(", "").Replace(")", "").Replace("[", "").Replace("]", "");       
-            line = line.Replace("'", "");
-            sArray = line.Split(',');
-            key = sArray[0]; //联赛ID
-            cArr = string.Join(",", sArray);
-            //string s = arr[2] + "," + arr[5] + "," + arr[6] + ",,,\n";
+            
 
 
 
-            return;
-
-
-
-            //Console.WriteLine(Pfun.GetCpuID());
-            textBox6.Text = Pfun.GetMainHardDiskId().ToString();
-            return;
-            string cUrl = "http://bf.win007.com/football/hg/Over_20150328.htm";
-            //string cUrl = "http://" + ui.cUrl + "/app/member/history/history_data.php?uid=" + ui.Uid + "&langx=zh-cn";
-            string s = Connect.getDocument(cUrl, null, null, "gb2312");
-            Hashtable ht = Pfun.HtmlTable(s);
-            string oddsval = null;
-            int na = -1;
-            foreach (DictionaryEntry de in ht)
-            {
-                // Console.WriteLine(de.Key.ToString());
-                Hashtable ht_list = (Hashtable)de.Value;
-                if (ht_list.Count == 10)
-                {
-                    // Console.Clear();
-                   // Console.WriteLine((string)ht_list[9]);
-                   // Console.WriteLine(ht_list[0] + ",  " + ht_list[1] + ",  " + ht_list[2] + ",  " + ht_list[3] + ",  " + ht_list[4] + ",  " + ht_list[5] + ",  " + ht_list[6] + ",  " + ht_list[7] + ",  " + ht_list[8]);
-                    string name=ht_list[1].ToString()+ht_list[2].ToString();
-                    oddsval = ht_list[0] + ",  " + ht_list[1] + ",  " + ht_list[2] + ",  " + ht_list[3] + ",  " + ht_list[4] + ",  " + ht_list[5] + ",  " + ht_list[6] + ",  " + ht_list[7] + ",  " + ht_list[8];
-                    cUrl = (string)ht_list[9];
-                    Thread.Sleep(3000);
-                    s = Connect.getDocument(cUrl, null, null, "gb2312");
-                    if (s == null) continue;
-                    if (s.IndexOf("访问频率") > -1) { Console.WriteLine(s); continue; }
-                    if (s.IndexOf("暂无大小球") > 0) continue;
-                    string odds1 = Pfun.GetElementbyId(s, "odds");
-                   
-                    Hashtable htDx = Pfun.HtmlTableDX(odds1);
-                    if (htDx == null) continue;
-                    foreach (DictionaryEntry dee in htDx)
-                    {
-                        Hashtable hs = (Hashtable)dee.Value;
-                        //if (hs["00"].ToString().IndexOf("red") > 0) continue;
-                        //if (hs["00"].ToString().IndexOf("&nbsp;") > 0) continue;
-                        //Console.WriteLine(hs[0] + ",  " + hs[1] + ",  " + hs[2]+",  "+hs["00"]+".  "+hs["style"]);
-                        oddsval += hs[0] + ",  " + hs[1] + ",  " + hs[2] + ",  " + hs["00"] + ".  " + hs["style"]+"\n";
-                     
-                    }
-                    string dir = DirFile.GetDateDir();
-                    string path = Application.StartupPath + "\\log\\";
-                    if (!DirFile.IsExistDirectory(path))
-                    {
-                        DirFile.CreateDirectory(path);
-                    }
-                    path +=  na.ToString()+ ".txt";
-                    if (!DirFile.IsExistFile(path))
-                    {
-                        DirFile.WriteText(path,oddsval, Encoding.UTF8);
-                    }
-                    string odds2 = Pfun.GetElementbyId(s, "odds2");
-                    na++;
-                }
-
-            }
-            Console.WriteLine(s);
+            
 
 
         }

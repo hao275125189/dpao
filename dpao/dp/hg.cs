@@ -287,7 +287,7 @@ namespace dpao.dp
         public static UserInfo Ball(UserInfo ui)
         {
 
-            Ball_ZZZ(ui);
+            //Ball_ZZZ(ui);
             //return ui;
 
             int t_page = 0;
@@ -359,7 +359,26 @@ namespace dpao.dp
                     string[] sArr = Regex.Split(arr[1], "<br>", RegexOptions.IgnoreCase);
                     string stime = sArr[0] + " " + sArr[1].Replace("a", "").Replace("p", "");
 
+                    string yoi = DateTime.Now.ToString("yyyy");//当前年份
+                    string Ktime = yoi + "-" + stime + ":00"; ;//开赛时间                   
+                    Ktime = Convert.ToDateTime(Ktime).ToString("yyyy-MM-dd HH:mm:00");//12小时                    
+                    if (sArr[1].IndexOf("p") > -1)
+                    {    //凌晨开赛时间
+                        DateTime WriteDate = Convert.ToDateTime(Ktime);
+                        Ktime = WriteDate.AddHours(12).ToString("yyyy-MM-dd HH:mm:00");
+                    }
+                    Hashtable hts = new Hashtable();
+                    hts["stime"] = stime;
+                    hts["ap"] = sArr[1];
+                    hts["Lid"] = arr[0].Replace("\n{", ""); ;
+                    hts["Ls"] = arr[2];
+                    hts["Q1"] = arr[5];
+                    hts["Q2"] = arr[6];
+                    hts["fstatus"] = 0;
+                    hts["etime"] = Ktime;
+                    hts["ctype"] = 1;
 
+                    ModSql(hts, "db_liansai");
 
                     long epoch = (DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000;
                     ht["stime"] = stime;
@@ -372,21 +391,8 @@ namespace dpao.dp
                     ht["Q1adds"] = arr[9];
                     ht["Q2adds"] = arr[10];
                     ht["addtime"] = epoch;
-                    ht["ctype"] = 2;
-                   
-                    ArrayList alk = new ArrayList();
-                    ArrayList alv = new ArrayList();
-
-                    foreach (DictionaryEntry myDE in ht)
-                    {
-                        alk.Add(myDE.Key);
-                        alv.Add("'" + myDE.Value.ToString() + "'");
-                    }
-                    string str = string.Join(",", (string[])alk.ToArray(typeof(string)));
-                    string strv = string.Join(",", (string[])alv.ToArray(typeof(string)));
-
-                    string sql = "INSERT INTO  db_odds(" + str + ") VALUES (" + strv + ");";
-                    DbHelperMySQL.ExecuteSql(sql);
+                    ht["ctype"] = 1;
+                    ModSql(ht, "db_odds");
 
                 }
 
@@ -495,7 +501,28 @@ namespace dpao.dp
                     string stime = sArr[0] + " " + sArr[1].Replace("a", "").Replace("p", "");
                     string[] str = v.Split(',');
                     str[0] = stime;
-                    string cArr = string.Join(",", str);
+
+
+                    string yoi = DateTime.Now.ToString("yyyy");//当前年份
+                    string Ktime = yoi + "-" + stime + ":00"; ;//开赛时间                   
+                    Ktime = Convert.ToDateTime(Ktime).ToString("yyyy-MM-dd HH:mm:00");//12小时                    
+                    if (sArr[1].IndexOf("p") > -1)
+                    {    //凌晨开赛时间
+                        DateTime WriteDate = Convert.ToDateTime(Ktime);
+                        Ktime = WriteDate.AddHours(12).ToString("yyyy-MM-dd HH:mm:00");
+                    }
+                    Hashtable hts = new Hashtable();
+                    hts["stime"]= stime;
+                    hts["ap"] = sArr[1];
+                    hts["Lid"] = key;
+                    hts["Ls"] = str[1];
+                    hts["Q1"] = str[4];
+                    hts["Q2"] = str[5];
+                    hts["fstatus"] = 0;
+                    hts["etime"] = Ktime;
+                    hts["ctype"] = 1;
+                    ModSql(hts, "db_liansai");
+                    string cArr = string.Join(",", str)+","+ Ktime;                   
                     hLianSai.Add(key, cArr);
                 }
 
@@ -535,23 +562,27 @@ namespace dpao.dp
                 ht["Q1adds"] = odds[2];
                 ht["Q2adds"] = odds[3];
                 ht["addtime"] = epoch;
-                ht["ctype"] = 1;
-
-                ArrayList alk = new ArrayList();
-                ArrayList alv = new ArrayList();
-                foreach (DictionaryEntry myDE in ht)
-                {
-                    alk.Add(myDE.Key);
-                    alv.Add("'" + myDE.Value.ToString() + "'");
-                }
-                string str = string.Join(",", (string[])alk.ToArray(typeof(string)));
-                string strv = string.Join(",", (string[])alv.ToArray(typeof(string)));
-
-                string sql = "INSERT INTO  db_odds(" + str + ") VALUES (" + strv + ");";
-                DbHelperMySQL.ExecuteSql(sql);
+                ht["ctype"] = 2;
+                ModSql(ht,"db_odds");
+               
 
             }
+        }
 
+        public static void ModSql(Hashtable ht,string table)
+        {
+            ArrayList alk = new ArrayList();
+            ArrayList alv = new ArrayList();
+            foreach (DictionaryEntry myDE in ht)
+            {
+                alk.Add(myDE.Key);
+                alv.Add("'" + myDE.Value.ToString() + "'");
+            }
+            string str = string.Join(",", (string[])alk.ToArray(typeof(string)));
+            string strv = string.Join(",", (string[])alv.ToArray(typeof(string)));
+            string sql = "INSERT INTO  "+ table + "(" + str + ") VALUES (" + strv + ");";
+            int rows=DbHelperMySQL.ExecuteSql(sql);
+            Console.WriteLine(rows.ToString());
 
 
         }

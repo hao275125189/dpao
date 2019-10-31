@@ -89,6 +89,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="dp\Check.cs" />
     <Compile Include="dp\Conf.cs" />
     <Compile Include="dp\Connect.cs" />
     <Compile Include="dp\database.cs" />
