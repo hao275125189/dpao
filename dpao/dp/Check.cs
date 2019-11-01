@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
@@ -44,10 +45,11 @@ namespace dpao.dp
 
             string Sql = "SELECT * FROM `db_odds` where Lid="+ Lid;
             DataTable Dt = DbHelperMySQL.DQuery(Sql);
-            
+            DataRow dr = null;
             for (int i = 0; i < Dt.Rows.Count; i++)
             {
-                DataRow dr = null;
+                if (Dt.Rows[i]["pan"].ToString().Trim() == "" || Dt.Rows[i]["pan"].ToString() == null) continue;
+                //dr = Dt.Rows[i];
                 try
                 {
                     double Q1adds = Convert.ToDouble(Dt.Rows[i]["Q1adds"]);
@@ -58,34 +60,45 @@ namespace dpao.dp
                         Q2 = Q2adds;
                         dr = Dt.Rows[i];
                     }
-                    if (Q1 - Q1adds > 0.2)
+                    if (Q1 - Q1adds > 0.2 || Q2 - Q2adds > 0.2)
                     {
-                        DataRow drs = null;
-                        Console.Write(Dt.Rows[i]["Q1"]);
-                        Console.WriteLine(Dt.Rows[i]["Q1adds"] +"---"+ Q1+"--"+ Lid);
-                        drs["Lid"] = 0;
-                        drs["Ls"] = 0;
-                        drs["Q1"] = 0;
-                        drs["Q2"] = 0;
-                        drs["H"] = 0;
-                        drs["C"] = 0;
-                        drs["PAN1"] = 0;
-                        drs["PAN2"] = 0;
-                        drs["Q1ODDS"] = 0;
-                        drs["Q1ODDS_F"] = 0;
-                        drs["Q2ODDS"] = 0;
-                        drs["Q2ODDS_F"] = 0;
-                        drs["stime"]  = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"); ;
+                        Hashtable drs =  new Hashtable();
+                       
+                        //Console.WriteLine(dr["pan"].ToString());
+                       
+                        //Console.Write(Dt.Rows[i]["Q1"].ToString());
+                        //Console.WriteLine(Dt.Rows[i]["Q1adds"] +"---"+ Q1+"--"+ Lid);
 
+                        drs["Lid"] = Dt.Rows[i]["Lid"].ToString();
+                        drs["Ls"] = Dt.Rows[i]["Ls"].ToString();
+                        drs["Q1"] = Dt.Rows[i]["Q1"].ToString();
+                        drs["Q2"] = Dt.Rows[i]["Q2"].ToString();
+                        drs["H"] = dr["HC"].ToString();
+                        drs["C"] = Dt.Rows[i]["HC"].ToString();
 
-
-
+                        drs["PAN1"] = dr["pan"].ToString();
+                        drs["PAN2"] = Dt.Rows[i]["pan"].ToString();
+                        drs["Q1ODDS"] = dr["Q1adds"].ToString();
+                        drs["Q1ODDS_F"] = Dt.Rows[i]["Q1adds"].ToString();
+                        drs["Q2ODDS"] = dr["Q2adds"].ToString();
+                        drs["Q2ODDS_F"] = Dt.Rows[i]["Q2adds"].ToString();
+                        //drs["stime"] = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            
+                       
+                        string sql = SqlBuilderHelper.InsertSQL(drs, "acc_log");
+                        Console.WriteLine(sql);
+                        int b = DbHelperMySQL.ExecuteSql(sql);
+                        if (b==1) {
+                            //DataRow drr = Conf.WhereLianSai.NewRow();
+                            Pfun.HashToRow(drs);
+                            //Conf.WhereLianSai.Rows.Add(drr);
+                        }
 
                     }
                     if (Q2 - Q2adds > 0.2)
                     {
-                        Console.Write(Dt.Rows[i]["Q2"]);
-                        Console.WriteLine(Dt.Rows[i]["Q2adds"] + "---" + Q2+"--"+ Lid);
+                        //Console.Write(Dt.Rows[i]["Q2"]);
+                        //Console.WriteLine(Dt.Rows[i]["Q2adds"] + "---" + Q2+"--"+ Lid);
                     }
 
  
@@ -95,7 +108,7 @@ namespace dpao.dp
 
                 }
                 catch {
-                    Console.WriteLine(Dt.Rows[i]["Q1adds"]);
+                    //Console.WriteLine(Dt.Rows[i]["Q1adds"]);
                 }
 
             }            

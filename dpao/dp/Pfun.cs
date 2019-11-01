@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using HtmlAgilityPack;
 using System.Management;
+using System.Data;
 
 namespace dpao.dp
 {
@@ -272,7 +273,45 @@ namespace dpao.dp
                 //        break; 
                 //} 
                 return hardDiskID;    
-        } 
+        }
+
+        public static Hashtable RowToHash(DataRow row)
+        {
+            Hashtable hash = new Hashtable();
+            for (int i = 0; i < row.Table.Columns.Count; i++)
+            {
+                hash.Add(row.Table.Columns[i].ColumnName.ToString(),  row[i].ToString());
+            }
+            return hash;
+        }
+
+        public static DataRow HashToRow(Hashtable ht)
+        {
+
+           
+           
+            //创建DataTable
+            DataTable Table = new DataTable();
+            foreach (string col in ht.Keys)
+            {
+                //Table.Columns.Add(col, typeof(string));
+                //Conf.WhereLianSai.Columns.Add(col, typeof(string));
+            }
+            if (Conf.WhereLianSai == null)
+            {
+                //Conf.WhereLianSai = Table;
+            }
+           
+
+            DataRow dr = Conf.WhereLianSai.NewRow();
+            foreach (string col in ht.Keys)
+            {
+                dr[col] = ht[col].ToString();
+            }
+            Conf.WhereLianSai.Rows.Add(dr);
+
+            return dr;
+        }
 
     }
 }

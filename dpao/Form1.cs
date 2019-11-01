@@ -40,21 +40,23 @@ namespace dpao
             DataRow dr = user.Rows[0];
             textBox5.Text=dr["name"].ToString();
             Console.WriteLine(dr["name"]);
-            //Console.WriteLine(user.Rows[0]["pwd"]);
-            Gva.ReadOnly = true;
+       
+            //Gva.ReadOnly = true;
           
-            Gva.RowHeadersVisible = false;
-            Gvb.ReadOnly = true;
-            Gvb.RowHeadersVisible = false;
-            Gva.AllowUserToResizeColumns = false;
+            //Gva.RowHeadersVisible = false;
+            //Gvb.ReadOnly = true;
+            //Gvb.RowHeadersVisible = false;
+            //Gva.AllowUserToResizeColumns = false;
 
             //禁止用户改变DataGridView1の所有行的行高
-            Gva.AllowUserToResizeRows = false;
-            Gvb.AllowUserToResizeColumns = false;
+            //Gva.AllowUserToResizeRows = false;
+            //Gvb.AllowUserToResizeColumns = false;
 
             //禁止用户改变DataGridView1の所有行的行高
-            Gvb.AllowUserToResizeRows = false;
+            //Gvb.AllowUserToResizeRows = false;
 
+            //Gvb.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+           
             Conf.ConfInit();
 
             textBox1.Text = Conf.dSw1.ToString();
@@ -64,6 +66,15 @@ namespace dpao
             checkBox1.Checked = Conf.bDqiu;
             checkBox2.Checked = Conf.bXqiu;
             checkBox3.Checked = Conf.d25;
+            Gva.DataSource = Conf.WhereLianSai;
+            for (int j = 0; j < Gvb.Columns.Count; j++)
+            {
+                //Gva.Columns[j].Width = 20;
+            }
+            Gva.Columns[0].Width = 20;
+            Gva.Columns[1].Width = 80;
+            //Gva.AutoGenerateColumns = false;
+
 
 
             //button9.Visible = false;
@@ -619,12 +630,37 @@ namespace dpao
                 webBrowser1.DocumentText = s;
             }
             catch { }
+            Gva.Columns[0].Width = 50;
+            Gva.Columns[1].Width = 100;
+
+            Gva.Columns[2].Width = 100;
+            Gva.Columns[3].Width = 100;
+            Gva.Columns[4].Width = 20;
+            Gva.Columns[5].Width = 20;
+            Gva.Columns[6].Width = 40;
+            Gva.Columns[7].Width = 40;
+            Gva.Columns[8].Width = 80;
+            Gva.Columns[9].Width = 80;
+            Gva.Columns[10].Width = 80;
+            Gva.Columns[1].HeaderText = "联赛";
+            Gva.Columns[2].HeaderText = "球队1";
+            Gva.Columns[3].HeaderText = "球队2";
+            Gva.Columns[4].HeaderText = "主";
+            Gva.Columns[5].HeaderText = "变";
+            Gva.Columns[6].HeaderText = "盘";
+            Gva.Columns[7].HeaderText = "变盘";
+            Gva.Columns[8].HeaderText = "球1水位";
+            Gva.Columns[9].HeaderText = "变盘水位";
+            Gva.Columns[10].HeaderText = "球2水位";
+            Gva.Columns[11].HeaderText = "变盘水位";
+
         }
 
         private void button9_Click(object sender, EventArgs e)
         {
-          string yoi=DateTime.Now.ToString("yyyy");
+            string yoi=DateTime.Now.ToString("yyyy");
             DataTable Dt= Check.Select1();
+            //Gva.DataSource = Conf.WhereLianSai;
             long epoch = (DateTime.Now.ToUniversalTime().Ticks - 621355968000000000) / 10000000 - 1*24*3600;
             string date = "2019-10-30 16:02:33";
             string time = Convert.ToDateTime(date).ToString("yyyy-MM-dd hh:mm");//12小时 
@@ -638,13 +674,14 @@ namespace dpao
             var rs = t3.TotalMinutes;
             Console.WriteLine(rs);
             string op = DateTime.Now.ToString("r");
+       
 
 
-            
 
 
 
-            
+
+
 
 
         }

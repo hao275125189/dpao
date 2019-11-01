@@ -569,7 +569,7 @@ namespace dpao.dp
             }
         }
 
-        public static void ModSql(Hashtable ht,string table)
+        public static int ModSql(Hashtable ht,string table)
         {
             ArrayList alk = new ArrayList();
             ArrayList alv = new ArrayList();
@@ -582,7 +582,23 @@ namespace dpao.dp
             string strv = string.Join(",", (string[])alv.ToArray(typeof(string)));
             string sql = "INSERT INTO  "+ table + "(" + str + ") VALUES (" + strv + ");";
             int rows=DbHelperMySQL.ExecuteSql(sql);
-            Console.WriteLine(rows.ToString());
+            return rows;
+
+
+        }
+        
+
+        public static int ModUpdate(Hashtable ht, string table,string wh)
+        {
+            string setval = null;
+            foreach (DictionaryEntry myDE in ht)
+            {
+                setval += myDE.ToString() + "= '" + myDE.Value + "'";
+            }
+         
+            string sql = "update   " + table + " set   "+ setval + "  where "+wh;
+            int rows = DbHelperMySQL.ExecuteSql(sql);
+            return rows;
 
 
         }

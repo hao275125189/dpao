@@ -31,6 +31,8 @@ namespace dpao.dp
 
         public static Hashtable hLianSai = new Hashtable();
         public static Hashtable hOdds = new Hashtable();
+        public static DataTable WhereLianSai = new DataTable();
+
 
 
 
@@ -70,7 +72,12 @@ namespace dpao.dp
                 string val = dr["val"].ToString().Trim();
                 if(!Conf.teamKey.ContainsKey(key))Conf.teamKey.Add(key, val);
             }
-            //return ht;
+
+            Conf.WhereLianSai = DbHelperMySQL.DQuery("select Lid,Ls,Q1,Q2,H,C,PAN1,PAN2,Q1ODDS,Q1ODDS_F,Q2ODDS,Q2ODDS_F from acc_log_cp");
+
+          
+
+
         }
         
     }
